@@ -12,11 +12,6 @@ func TestCapacity(t *testing.T) {
 	if want, got := 128, len(s); want != got {
 		t.Errorf("slice length want %v got %v", want, got)
 	}
-	testLen(t, arena, 128)
-	testCap(t, arena, 128)
-	arena.Reset()
-	testLen(t, arena, 0)
-	testCap(t, arena, 128)
 }
 
 func testCap(t *testing.T, arena *T, want int) {
@@ -36,7 +31,6 @@ func testLen(t *testing.T, arena *T, want int) {
 func BenchmarkCalls(b *testing.B) {
 	arena := New(0)
 	exampleUsage(arena)
-	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		arena.Reset()
 		exampleUsage(arena)
