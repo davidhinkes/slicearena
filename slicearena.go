@@ -23,17 +23,24 @@ func New(zero interface{}) *T {
 }
 
 // Reset should be called when the slices created via T.MakeSlice are no
-// longer needed.
+// longer needed.  After this call, any slices returned from MakeSlice are
+// invalid.
 func (t *T) Reset() {
-	if spillover := t.spillover; spillover > 0 {
-		newLength := t.slice.Len() + spillover
-		t.slice = reflect.MakeSlice(t.ty, 0, newLength)
-		t.spillover = 0
-	} else {
-		t.slice = t.slice.Slice(0, 0)
+	spillover := t.spillover
+	if spillover == 0 {
+		// There is no need to allocate a new slice, the existing t.slice arena
+		// was big engough.
+		t.slice = t.slice.Slice(0,0)
+		return
 	}
+	// We need a bigger slice.
+	newLength := t.slice.Len() + spillover
+	t.slice = reflect.MakeSlice(t.ty, 0, newLength)
+	t.spillover = 0
 }
 
+// MakeSlice returns a slice of desired len size.  After Reest() is called,
+// any slices returned from this function are no longer valid.
 func (t *T) MakeSlice(size int) interface{} {
 	i := t.len()
 	j := i + size
