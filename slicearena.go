@@ -30,7 +30,7 @@ func (t *T) Reset() {
 	if spillover == 0 {
 		// There is no need to allocate a new slice, the existing t.slice arena
 		// was big engough.
-		t.slice = t.slice.Slice(0,0)
+		t.slice = t.slice.Slice(0, 0)
 		return
 	}
 	// We need a bigger slice.
